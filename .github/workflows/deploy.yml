@@ -27,14 +27,22 @@ jobs:
             git fetch --all
             git reset --hard origin/main
             
-            # Deletes the current database so starting from zero
+            # NUKE THE DATABASE AND MIGRATIONS
             rm -f db.sqlite3
+            
+            # Delete all migration files except __init__.py
+            find . -path "*/migrations/*.py" -not -name "__init__.py" -delete
+            find . -path "*/migrations/*.pyc" -delete
             
             # Rebuild the environment
             source ../venv/bin/activate
             
-            # Creates a brand new, empty db.sqlite3 based on current models
-            python manage.py migrate 
+            # Create brand new, synced migrations
+            python manage.py makemigrations 
+            
+            # Apply them
+            python manage.py migrate
+            
             python manage.py collectstatic --noinput
             
             # Seed the fresh database
