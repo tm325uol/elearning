@@ -1,0 +1,205 @@
+<div class="space-y-6">
+  <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+    <div class="min-w-0">
+      <div class="flex items-center gap-3">
+        <h2 class="text-2xl font-bold text-gray-900 leading-none">Students</h2>
+        
+        <div class="inline-flex items-center gap-1 px-2 py-1 bg-blue-600 rounded-lg shadow-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+          <span class="text-[10px] font-black text-white uppercase tracking-tight">{{ enrollments|length }} Enrolled</span>
+        </div>
+      </div>
+      <p class="text-sm text-gray-500 mt-1">Monitor engagement and completion rates.</p>
+    </div>
+
+    <div class="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-blue-100 bg-blue-50/50 shadow-sm">
+      <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white shrink-0">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+        </svg>
+      </div>
+      <div>
+        <div class="text-[10px] font-black text-blue-600 uppercase tracking-widest leading-none">Class Average</div>
+        <div class="text-lg font-black text-gray-900 leading-tight mt-0.5">{{ avg_progress|default:"0" }}%</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 gap-3 mt-2">
+    {% for e in enrollments %}
+      <div class="group bg-white rounded-2xl border border-gray-200 p-4 hover:border-blue-300 transition-all hover:shadow-sm">
+        <div class="flex items-center justify-between gap-6">
+          
+          <div class="flex items-center gap-4 min-w-0 flex-1">
+            <div class="w-12 h-12 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0 overflow-hidden text-blue-600 font-bold">
+              <img src="{{ e.student.avatar_url }}" 
+                alt="{{ e.student.full_name|default:e.student.username }}" 
+                class="w-full h-full object-cover rounded-full bg-gray-100">
+            </div>
+
+            <div class="min-w-0">
+              <div class="text-sm font-bold text-gray-900 truncate">
+                {{ e.student.full_name|default:e.student.username }}
+              </div>
+              <div class="text-[11px] text-gray-500 truncate mt-0.5">
+                {{ e.student.email }}
+              </div>
+            </div>
+          </div>
+
+          <div class="hidden sm:block flex-1 max-w-xs">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Progress</span>
+              <span class="text-[11px] font-black text-blue-600">{{ e.progress }}%</span>
+            </div>
+            <div class="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
+              <div class="bg-blue-600 h-full rounded-full transition-all duration-500" style="width: {{ e.progress }}%"></div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-4 shrink-0">
+            <div class="hidden lg:flex flex-col items-end">
+                <div class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Joined</div>
+                <div class="text-[11px] font-bold text-gray-700">{{ e.created_at|date:"M d, Y" }}</div>
+            </div>
+
+            <div class="flex items-center gap-1.5 border-l border-gray-100 pl-4">
+              <div class="relative group/tooltip">
+                <a href="{% url 'accounts:user_profile' e.student.username %}"" class="w-9 h-9 rounded-lg flex items-center justify-center text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-all">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                </a>
+                
+                <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-gray-900 text-white text-[10px] font-bold rounded-lg opacity-0 translate-y-1 group-hover/tooltip:opacity-100 group-hover/tooltip:translate-y-0 transition-all pointer-events-none whitespace-nowrap z-10 shadow-xl">
+                    View student profile
+                    <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+                </div>
+              </div>
+
+              {% if is_teacher_view %}
+                <div class="relative group/tooltip">
+                  <button type="button" 
+                          onclick="openRemoveStudentModal('{{ e.id }}', '{{ e.student.get_full_name|escapejs }}')"
+                          class="w-9 h-9 rounded-lg flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                  <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-gray-900 text-white text-[10px] font-bold rounded-lg opacity-0 translate-y-1 group-hover/tooltip:opacity-100 group-hover/tooltip:translate-y-0 transition-all pointer-events-none whitespace-nowrap z-10 shadow-xl">
+                    Remove student
+                    <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+                  </div>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="flex flex-col items-center justify-center py-20 bg-gray-50/50 rounded-[32px] border-2 border-dashed border-gray-200 text-center">
+        <h3 class="text-lg font-bold text-gray-900">No students enrolled yet</h3>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Delete a Student Enrollment Modal -->
+<div id="removeStudentModal"
+     class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40 backdrop-blur-sm"
+     onclick="closeRemoveStudentModal()">
+
+  <div class="w-full max-w-md rounded-2xl bg-white shadow-[0_30px_90px_rgba(0,0,0,0.25)] overflow-hidden"
+       onclick="event.stopPropagation()">
+
+    <div class="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-red-50 text-red-600 flex items-center justify-center">
+          <!-- warning icon -->
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l6.518 11.59c.75 1.334-.214 3.01-1.742 3.01H3.48c-1.528 0-2.492-1.676-1.742-3.01L8.257 3.1zM11 14a1 1 0 10-2 0 1 1 0 002 0zm-1-8a1 1 0 00-1 1v4a1 1 0 102 0V7a1 1 0 00-1-1z" clip-rule="evenodd"/>
+          </svg>
+        </div>
+
+        <div>
+          <div class="text-base font-semibold text-gray-900">Remove student</div>
+          <div class="text-sm text-gray-500">This will unenroll them from the course.</div>
+        </div>
+      </div>
+
+      <button type="button"
+              class="w-10 h-10 rounded-full hover:bg-gray-100 flex items-center justify-center transition"
+              aria-label="Close"
+              onclick="closeRemoveStudentModal()">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="px-6 py-5">
+      <p class="text-sm text-gray-700">
+        Are you sure you want to remove
+        <span id="removeStudentName" class="font-semibold text-gray-900">this student</span>?
+      </p>
+      <p class="mt-2 text-xs text-gray-500">
+        They can re-enroll later if the course is still available.
+      </p>
+    </div>
+
+    <div class="px-6 py-5 border-t border-gray-100 bg-white flex items-center justify-end gap-3">
+      <button type="button"
+              class="px-5 py-2.5 rounded-xl border border-gray-200 text-gray-700 font-semibold hover:bg-gray-50 transition"
+              onclick="closeRemoveStudentModal()">
+        Cancel
+      </button>
+
+      <form id="removeStudentForm" method="post" action="">
+        {% csrf_token %}
+        <button type="submit"
+                class="px-5 py-2.5 rounded-xl bg-red-600 text-white font-semibold hover:bg-red-700 transition">
+          Remove
+        </button>
+      </form>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function openRemoveStudentModal(enrollmentId, studentName) {
+    const modal = document.getElementById("removeStudentModal");
+    const nameEl = document.getElementById("removeStudentName");
+    const formEl = document.getElementById("removeStudentForm");
+
+    if (!modal || !nameEl || !formEl) return;
+
+    nameEl.textContent = studentName || "this student";
+
+    // Build correct URL dynamically
+    const courseId = "{{ course.id }}";
+    formEl.action = `/courses/${courseId}/enrollments/${enrollmentId}/remove/`;
+
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+
+    document.addEventListener("keydown", escCloseRemoveModal);
+  }
+
+  function closeRemoveStudentModal() {
+    const modal = document.getElementById("removeStudentModal");
+    if (!modal) return;
+
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
+
+    document.removeEventListener("keydown", escCloseRemoveModal);
+  }
+
+  function escCloseRemoveModal(e) {
+    if (e.key === "Escape") closeRemoveStudentModal();
+  }
+</script>

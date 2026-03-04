@@ -1,0 +1,191 @@
+<div class="space-y-8">
+  <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center gap-3">
+      <h2 class="text-2xl font-bold text-gray-900 leading-none">Student feedback</h2>
+      <div class="inline-flex items-center gap-1 px-3 py-1 bg-blue-600 rounded-lg shadow-sm">
+        <span class="text-[10px] font-black text-white uppercase tracking-tight">{{ total_reviews|default:0 }} Reviews</span>
+      </div>
+    </div>
+
+    {% if is_enrolled and request.user.is_student %}
+      <button type="button"
+              data-open-feedback="1"
+              data-course-id="{{ course.id }}"
+              data-course-display-title="{{ course.title|escapejs }}"
+              data-feedback-rating="{{ user_feedback.rating|default:0 }}"
+              data-feedback-comment="{{ user_feedback.comment|default:''|escapejs }}"
+              class="px-5 py-2.5 bg-white border border-gray-200 text-gray-900 rounded-xl text-sm font-bold hover:bg-gray-50 hover:border-blue-600 transition shadow-sm">
+        {% if user_feedback %}
+          Edit your rating
+        {% else %}
+          Leave a rating
+        {% endif %}
+      </button>
+    {% endif %}
+  </div>
+
+  <div class="flex justify-center w-full py-8">
+    
+    <div class="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-10 w-full max-w-3xl">
+      
+      <div class="flex flex-col items-center justify-center text-center shrink-0">
+        <div class="text-7xl font-black text-amber-600 leading-none tracking-tighter">{{ avg_rating|default:"0.0" }}</div>
+          <div class="flex items-center justify-center gap-1 mt-4">
+            {% for star in star_display %}
+              
+              {% if star == 'full' %}
+                <svg class="w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                </svg>
+                
+              {% elif star == 'half' %}
+                <div class="relative w-5 h-5">
+                  <svg class="absolute inset-0 text-gray-200" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                  </svg>
+                  <svg class="absolute inset-0 text-amber-400" style="clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                  </svg>
+                </div>
+
+              {% else %}
+                <svg class="w-5 h-5 text-gray-200" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                </svg>
+                
+              {% endif %}
+            {% endfor %}
+          </div>
+        <div class="text-[11px] font-black text-amber-700 mt-2.5 uppercase tracking-widest">Course Rating</div>
+      </div>
+
+      <div class="w-full flex-1 max-w-lg space-y-3.5"> 
+        {% for rating_row in rating_stats %}
+        
+        <div class="flex items-center gap-5 group cursor-pointer hover:opacity-80 transition" 
+             onclick="filterByRating('{{ rating_row.stars }}')">
+          
+          <div class="flex-1 bg-gray-100 rounded-full h-3.5 relative overflow-hidden">
+            <div class="bg-gray-400 h-full rounded-full transition-all duration-1000 ease-out group-hover:bg-amber-400" 
+                 style="width: {{ rating_row.percent }}%"></div>
+          </div>
+          
+          <div class="flex items-center gap-3 min-w-[150px]">
+            <div class="flex gap-0.5">
+              {% for i in "12345" %}
+                <svg class="w-4 h-4 {% if forloop.counter <= rating_row.stars %}text-amber-500{% else %}text-gray-200{% endif %}" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                </svg>
+              {% endfor %}
+            </div>
+            <span class="text-sm font-bold text-blue-600 underline group-hover:text-blue-800 w-10 text-right">
+              {{ rating_row.percent }}%
+            </span>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      
+    </div>
+  </div>
+    
+  </div>
+
+  <div class="pt-6 border-t border-gray-100">
+    <h3 class="text-xl font-bold text-gray-900 mb-5">Reviews</h3>
+    
+    <form method="get" action="" class="flex flex-col md:flex-row gap-4" id="review-filter-form"
+          onsubmit="if(this.search.value.trim() === '') this.search.disabled = true;">
+      <input type="hidden" name="tab" value="feedback">
+      
+      <div class="relative flex-1">
+        <input type="text" name="search" placeholder="Search reviews" value="{{ request.GET.search }}"
+               class="w-full h-12 pl-4 pr-12 rounded-xl border border-gray-300 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition outline-none text-sm shadow-sm">
+               
+        <button type="submit" class="absolute right-2 top-2 w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white hover:bg-blue-700 transition shadow-sm">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        </button>
+      </div>
+      
+      <select name="rating" id="rating-select" onchange="this.form.submit()"
+              class="h-12 px-4 pr-8 rounded-xl border border-gray-300 bg-white font-bold text-sm text-gray-700 outline-none min-w-[180px] shadow-sm cursor-pointer hover:border-gray-400 focus:border-blue-600 transition">
+        <option value="" {% if not request.GET.rating %}selected{% endif %}>All ratings</option>
+        <option value="5" {% if request.GET.rating == '5' %}selected{% endif %}>5 stars</option>
+        <option value="4" {% if request.GET.rating == '4' %}selected{% endif %}>4 stars</option>
+        <option value="3" {% if request.GET.rating == '3' %}selected{% endif %}>3 stars</option>
+        <option value="2" {% if request.GET.rating == '2' %}selected{% endif %}>2 stars</option>
+        <option value="1" {% if request.GET.rating == '1' %}selected{% endif %}>1 star</option>
+      </select>
+    </form>
+  </div>
+
+  <div class="divide-y divide-gray-100">
+    {% for fb in reviews %}
+    <div class="py-8">
+      <div class="flex gap-4">
+        {% if fb.student.profile_photo %}
+          <img src="{{ fb.student.avatar_url }}" 
+               alt="{{ fb.student.username }}'s avatar" 
+               class="w-12 h-12 rounded-full object-cover shrink-0 border border-gray-100 shadow-sm">
+        {% else %}
+          <div class="w-12 h-12 rounded-full bg-gray-900 flex items-center justify-center text-white font-bold shrink-0 shadow-sm">
+            {{ fb.student.full_name|default:fb.student.username|slice:":1"|upper }}
+          </div>
+        {% endif %}
+        <div class="flex-1 min-w-0">
+          <div class="text-sm font-bold text-gray-900">{{ fb.student.full_name }}</div>
+          <div class="flex items-center gap-2 mt-1">
+            <div class="flex gap-0.5">
+              {% for i in "12345" %}
+                <svg class="w-3 h-3 {% if forloop.counter <= fb.rating %}text-amber-500{% else %}text-gray-200{% endif %}" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+              {% endfor %}
+            </div>
+            <span class="text-xs text-gray-500">{{ fb.created_at|timesince }} ago</span>
+          </div>
+          
+          <div class="mt-3 text-sm text-gray-800 leading-relaxed">
+            {{ fb.comment|default:"-" }}
+          </div>
+
+          {% comment %}
+            I am hiding this "thumb up and/or report a review" feature for now.
+          <!-- <div class="mt-4 flex items-center gap-4">
+            <span class="text-[11px] text-gray-500">Was this review helpful?</span>
+            <div class="flex gap-2">
+              <button class="w-9 h-9 rounded-full border border-gray-900 flex items-center justify-center hover:bg-gray-50 transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M14 9l-2-2m0 0l-2 2m2-2v12M5 14H3a2 2 0 01-2-2V5a2 2 0 012-2h11a2 2 0 012 2v11a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+              </button>
+              <button class="w-9 h-9 rounded-full border border-gray-900 flex items-center justify-center hover:bg-gray-50 transition rotate-180">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M14 9l-2-2m0 0l-2 2m2-2v12M5 14H3a2 2 0 01-2-2V5a2 2 0 012-2h11a2 2 0 012 2v11a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+              </button>
+              <button class="text-xs font-bold text-gray-900 underline ml-2">Report</button>
+            </div>
+          </div> -->
+          {% endcomment %}
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="py-20 text-center">
+        <h3 class="text-lg font-bold text-gray-900">No reviews yet</h3>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+  function filterByRating(stars) {
+    const form = document.getElementById('review-filter-form');
+    
+    const searchInput = form.querySelector('input[name="search"]');
+    const selectElement = document.getElementById('rating-select');
+    
+    selectElement.value = stars; 
+    
+    if (searchInput.value.trim() === '') {
+      searchInput.disabled = true;
+    }
+    
+    form.submit(); 
+  }
+</script>

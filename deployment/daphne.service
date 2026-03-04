@@ -1,0 +1,15 @@
+#/etc/systemd/system/daphne.service
+
+[Unit]
+Description=Daphne ASGI Service
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/webdev-final/elearning
+ExecStart=/opt/webdev-final/venv/bin/daphne -p 8001 elearning.asgi:application
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

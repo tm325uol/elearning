@@ -1,0 +1,214 @@
+<nav class="bg-white border-b border-gray-100 relative z-40">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+    <a href="{% url 'core:home' %}" class="inline-flex items-center gap-2.5 font-semibold text-gray-900 group">
+      <span class="inline-flex items-center justify-center w-10 h-10 rounded-[14px] bg-blue-600 text-white shadow-lg shadow-blue-600/20 group-hover:rotate-12 transition-transform duration-300">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="18" cy="5" r="3" />
+          <circle cx="6" cy="12" r="3" />
+          <circle cx="18" cy="19" r="3" />
+          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+          <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+        </svg>
+      </span>
+      <span class="text-lg font-extrabold tracking-tight">e<span class="text-blue-600 font-medium">Learning</span></span>
+    </a>
+
+    <div class="flex items-center gap-1 sm:gap-2">
+      {% if user.is_authenticated %}
+        
+        <button type="button"
+                onclick="openSearch()"
+                title="Search students / teachers"
+                class="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all focus:outline-none">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+        </button>
+
+        <button type="button"
+                onclick="openMessenger()"
+                title="Messages"
+                class="relative p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all focus:outline-none">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15a4 4 0 0 1-4 4H7l-4 4V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/>
+            </svg>
+            <span id="messengerBadge" 
+                  class="hidden absolute top-2 right-2 flex items-center justify-center h-2 w-2 bg-blue-600 rounded-full border-2 border-white">
+            </span>
+        </button>
+
+        <div class="relative flex items-center">
+          <button type="button"
+                  id="notificationBtn"
+                  onclick="toggleNotificationMenu()"
+                  class="relative p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all focus:outline-none"
+                  aria-haspopup="menu"
+                  aria-expanded="false">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              </svg>
+              <span id="notificationBadge" 
+                    class="hidden absolute top-1 right-1 flex items-center justify-center h-4 w-4 bg-red-500 text-white text-[10px] font-bold rounded-full border-2 border-white">
+                  0
+              </span>
+          </button>
+
+          <div id="notificationMenu"
+              class="hidden absolute right-0 top-12 w-80 sm:w-96 bg-white border border-gray-100 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] z-50 overflow-hidden flex flex-col"
+              role="menu"
+              aria-labelledby="notificationBtn">
+              <div class="w-full px-4 py-3 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+                  <h3 class="font-semibold text-gray-800 text-sm m-0">Notifications</h3>
+                  <button type="button" 
+                          onclick="markAllNotificationsRead()" 
+                          class="text-xs font-medium text-blue-600 hover:text-blue-700 transition-colors">
+                      Mark all read
+                  </button>
+              </div>
+              <div id="notificationList" class="w-full max-h-[28rem] overflow-y-auto overscroll-contain">
+                  <div class="p-8 text-center flex flex-col items-center justify-center">
+                      <div class="w-8 h-8 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin mb-3"></div>
+                      <p class="text-sm text-gray-500">Loading...</p>
+                  </div>
+              </div>
+          </div>
+        </div>
+
+        <div class="h-6 w-px bg-gray-100 mx-1"></div>
+
+        <div class="relative">
+          <button type="button"
+                  id="userMenuBtn"
+                  onclick="toggleUserMenu()"
+                  class="inline-flex items-center gap-2 rounded-xl px-2 py-1.5 hover:bg-gray-50 transition"
+                  aria-haspopup="menu"
+                  aria-expanded="false">
+            <div class="w-9 h-9 rounded-xl overflow-hidden bg-gray-100 ring-2 ring-transparent hover:ring-blue-100 transition-all">
+              <img src="{{ user.avatar_url }}" class="w-full h-full object-cover" alt="Avatar">
+            </div>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m6 9 6 6 6-6"/>
+            </svg>
+          </button>
+
+          <div id="userMenu"
+               class="hidden absolute right-0 mt-2 w-64 bg-white border border-gray-100 rounded-2xl shadow-lg py-1 z-50 overflow-hidden"
+               role="menu"
+               aria-labelledby="userMenuBtn">
+            <a href="/@{{ user.username }}" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100">
+              <div class="w-10 h-10 rounded-full overflow-hidden bg-gray-100 border border-gray-200 shrink-0">
+                <img src="{{ user.avatar_url }}" class="w-full h-full object-cover" alt="Avatar">
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-semibold text-gray-900 truncate">{{ user.full_name|default:user.username }}</p>
+                <p class="text-xs text-gray-500 truncate" title="{{ user.email }}">{{ user.email }}</p>
+              </div>
+            </a>
+            <button type="button"
+                    onclick="openProfileModal(); closeUserMenu();"
+                    class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors cursor-pointer"
+                    role="menuitem">
+              Edit profile
+            </button>
+            <div class="border-t border-gray-100 my-1"></div>
+            <form method="post" action="{% url 'accounts:logout' %}" class="block m-0 p-0 w-full">
+                {% csrf_token %}
+                <button type="submit" class="w-full text-left block px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors cursor-pointer">
+                    Sign out
+                </button>
+            </form>
+          </div>
+        </div>
+
+      {% else %}
+        <a href="{% url 'accounts:login' %}"
+           class="inline-flex items-center px-4 py-2 rounded-xl border border-gray-200 bg-white
+                  text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">
+          Login
+        </a>
+        <a href="/signup/"
+           class="inline-flex items-center px-4 py-2 rounded-xl bg-blue-600
+                  text-sm font-semibold text-white hover:bg-blue-700
+                  shadow-[0_12px_30px_rgba(37,99,235,0.20)] transition">
+          Sign Up
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</nav>
+
+<script>
+  // --- User Menu Functions ---
+  function closeUserMenu() {
+    const menu = document.getElementById("userMenu");
+    const btn = document.getElementById("userMenuBtn");
+    if (!menu || !btn) return;
+    menu.classList.add("hidden");
+    btn.setAttribute("aria-expanded", "false");
+  }
+
+  function toggleUserMenu() {
+    const menu = document.getElementById("userMenu");
+    const btn = document.getElementById("userMenuBtn");
+    if (!menu) return;
+    
+    if (menu.classList.contains("hidden")) {
+      closeNotificationMenu(); // Close notifs if open
+      menu.classList.remove("hidden");
+      btn.setAttribute("aria-expanded", "true");
+    } else {
+      closeUserMenu();
+    }
+  }
+
+  // --- Notification Menu Functions ---
+  function closeNotificationMenu() {
+    const menu = document.getElementById("notificationMenu");
+    const btn = document.getElementById("notificationBtn");
+    if (!menu || !btn) return;
+    menu.classList.add("hidden");
+    btn.setAttribute("aria-expanded", "false");
+  }
+
+  function toggleNotificationMenu() {
+    const menu = document.getElementById("notificationMenu");
+    const btn = document.getElementById("notificationBtn");
+    if (!menu) return;
+
+    if (menu.classList.contains("hidden")) {
+      closeUserMenu(); // Close user profile if open
+      menu.classList.remove("hidden");
+      btn.setAttribute("aria-expanded", "true");
+    } else {
+      closeNotificationMenu();
+    }
+  }
+
+  // --- Global Listeners (Click Outside & Escape) ---
+  document.addEventListener("click", function (e) {
+    // User Menu
+    const userMenu = document.getElementById("userMenu");
+    const userBtn = document.getElementById("userMenuBtn");
+    if (userMenu && !userMenu.classList.contains("hidden")) {
+      if (!userMenu.contains(e.target) && !userBtn.contains(e.target)) {
+        closeUserMenu();
+      }
+    }
+
+    // Notification Menu
+    const notifMenu = document.getElementById("notificationMenu");
+    const notifBtn = document.getElementById("notificationBtn");
+    if (notifMenu && !notifMenu.classList.contains("hidden")) {
+      if (!notifMenu.contains(e.target) && !notifBtn.contains(e.target)) {
+        closeNotificationMenu();
+      }
+    }
+  });
+
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") {
+      closeUserMenu();
+      closeNotificationMenu();
+    }
+  });
+</script>

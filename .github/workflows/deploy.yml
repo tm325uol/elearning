@@ -1,0 +1,56 @@
+name: Deploy to DigitalOcean
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Executing remote ssh commands
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd /opt/webdev-final/elearning
+
+            # Tell Git to trust this directory even though www-data owns it
+            git config --global --add safe.directory /opt/webdev-final/elearning
+            
+            # Pull the absolute latest code
+            git fetch --all
+            git reset --hard origin/main
+            
+            # Deletes the current database so starting from zero
+            rm -f db.sqlite3
+            
+            # Rebuild the environment
+            source ../venv/bin/activate
+            
+            # Creates a brand new, empty db.sqlite3 based on current models
+            python manage.py migrate 
+            python manage.py collectstatic --noinput
+            
+            # Seed the fresh database
+            # Create the admin user silently
+            export DJANGO_SUPERUSER_PASSWORD="${{ secrets.DJANGO_SUPERUSER_PWD }}"
+            python manage.py createsuperuser --noinput --username="admin" --email="admin@example.com" || true
+            
+            # Populate dummy students/teachers
+            python manage.py generate_sample_data
+            
+            # Fix permissions for the newly created database and files
+            sudo chown -R www-data:www-data /opt/webdev-final/elearning
+            sudo chmod -R 755 /opt/webdev-final/elearning
+            sudo chmod 664 /opt/webdev-final/elearning/db.sqlite3
+            
+            # Restart the web servers to clear any cached memory
+            sudo systemctl restart gunicorn
+            sudo systemctl restart daphne
+            # sudo systemctl restart nginx

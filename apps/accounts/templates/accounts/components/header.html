@@ -1,0 +1,16 @@
+<div class="flex justify-between items-center mb-8">
+  <div>
+    {% if is_own_profile %}
+      <h1 class="text-2xl font-semibold text-gray-900 leading-tight">Welcome back</h1>
+      <p class="mt-1 text-sm text-gray-500">
+        {% if request.user.role == request.user.Role.TEACHER %}
+          Manage your courses and students
+        {% else %}
+          Continue your learning journey
+        {% endif %}
+      </p>
+    {% else %}
+      <h1 class="text-2xl font-semibold text-gray-900 leading-tight">{{ profile_user.full_name|default:profile_user.username }}'s Profile</h1>
+    {% endif %}
+  </div>
+</div>
