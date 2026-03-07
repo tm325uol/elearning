@@ -79,7 +79,7 @@ class Command(BaseCommand):
                 title=title,
                 description=fake.paragraph(nb_sentences=5),
                 category=category,
-                duration=f"{random.randint(4, 16)} weeks",
+                duration=f"{random.randint(4, 16)}",
                 max_students=random.choice([None, 50, 100, 200])
             )
             courses.append(course)
