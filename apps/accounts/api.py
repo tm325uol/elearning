@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework import status, views
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
@@ -42,45 +42,47 @@ def get_user_data_payload(user):
     return data
 
 
-@extend_schema(
-    summary="Search users",
-    description="Search active users by name, username, or email, with optional role filtering.",
-    parameters=[
-        OpenApiParameter(name="q", type=str, required=False),
-        OpenApiParameter(name="role", type=str, required=False),
-    ],
-    responses=UserSearchResponseSerializer,
-)
-@api_view(["GET"])
-@permission_classes([IsAuthenticated])
-def user_search_api(request):
-    query = request.GET.get("q", "").strip()
-    role = request.GET.get("role", "").upper()
+class UserSearchAPI(views.APIView):
+    permission_classes = [IsAuthenticated]
 
-    users = User.objects.filter(is_active=True)
+    @extend_schema(
+        summary="Search users",
+        description="Search active users by full name, username, or email.",
+        parameters=[
+            OpenApiParameter(name="q", type=str, required=False),
+            OpenApiParameter(name="role", type=str, required=False),
+        ],
+        responses=UserSearchResponseSerializer,
+    )
+    def get(self, request):
+        query = request.GET.get("q", "").strip()
+        role = request.GET.get("role", "").upper()
 
-    if role and role != "ALL":
-        users = users.filter(role=role)
+        users = User.objects.filter(is_active=True)
 
-    if query:
-        users = users.filter(
-            Q(full_name__icontains=query)
-            | Q(username__icontains=query)
-            | Q(email__icontains=query)
-        )
+        if role and role != "ALL":
+            users = users.filter(role=role)
 
-    payload = [get_user_data_payload(user) for user in users[:15]]
-    return Response({"results": payload})
+        if query:
+            users = users.filter(
+                Q(full_name__icontains=query)
+                | Q(username__icontains=query)
+                | Q(email__icontains=query)
+            )
+
+        payload = [get_user_data_payload(user) for user in users[:15]]
+        return Response({"results": payload}, status=status.HTTP_200_OK)
 
 
-@extend_schema(
-    summary="Get user profile",
-    description="Return the public profile payload for a user by username.",
-    responses=UserProfileSerializer,
-)
-@api_view(["GET"])
-@permission_classes([IsAuthenticated])
-def user_profile_api(request, username):
-    profile_user = get_object_or_404(User, username=username)
-    payload = get_user_data_payload(profile_user)
-    return Response(payload)
+class UserProfileAPI(views.APIView):
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(
+        summary="Get user profile",
+        description="Return the public profile data for a user by username.",
+        responses=UserProfileSerializer,
+    )
+    def get(self, request, username):
+        user = get_object_or_404(User, username=username)
+        payload = get_user_data_payload(user)
+        return Response(payload, status=status.HTTP_200_OK)

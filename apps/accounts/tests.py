@@ -277,9 +277,8 @@ class ProfileViewTests(AccountsBaseTestCase):
 
 class AccountsApiTests(AccountsBaseTestCase):
     def test_user_search_requires_login(self):
-        response = self.client.get(reverse("accounts:user_search_api"))
-        self.assertEqual(response.status_code, 302)
-        self.assertIn(reverse("accounts:login"), response.url)
+        response = self.client.get(reverse("api:accounts_api:search"))
+        self.assertEqual(response.status_code, 403)
 
     def test_user_search_filters_by_query_and_role(self):
         requester = self.create_user(username="requester")
@@ -288,7 +287,7 @@ class AccountsApiTests(AccountsBaseTestCase):
         self.client.force_login(requester)
 
         response = self.client.get(
-            reverse("accounts:user_search_api"),
+            reverse("api:accounts_api:search"),
             data={"q": "alice", "role": "teacher"},
         )
 
@@ -304,7 +303,7 @@ class AccountsApiTests(AccountsBaseTestCase):
         self.create_user(username="inactiveuser", full_name="Inactive User", email="inactive@example.com", is_active=False)
         self.client.force_login(requester)
 
-        response = self.client.get(reverse("accounts:user_search_api"), data={"q": "user"})
+        response = self.client.get(reverse("api:accounts_api:search"), data={"q": "user"})
 
         usernames = [result["username"] for result in response.json()["results"]]
         self.assertIn("activeuser", usernames)
@@ -321,14 +320,13 @@ class AccountsApiTests(AccountsBaseTestCase):
                 full_name=f"User {i}",
             )
 
-        response = self.client.get(reverse("accounts:user_search_api"))
+        response = self.client.get(reverse("api:accounts_api:search"))
         self.assertEqual(len(response.json()["results"]), 15)
 
     def test_user_profile_api_requires_login(self):
         user = self.create_user(username="apiuser")
-        response = self.client.get(reverse("accounts:user_profile_api", kwargs={"username": user.username}))
-        self.assertEqual(response.status_code, 302)
-        self.assertIn(reverse("accounts:login"), response.url)
+        response = self.client.get(reverse("api:accounts_api:detail", kwargs={"username": user.username}))
+        self.assertEqual(response.status_code, 403)
 
     def test_user_profile_api_returns_expected_payload_for_teacher(self):
         requester = self.create_user(username="requester")
@@ -337,7 +335,7 @@ class AccountsApiTests(AccountsBaseTestCase):
         Teaching.objects.create(teacher=teacher, course=course)
         self.client.force_login(requester)
 
-        response = self.client.get(reverse("accounts:user_profile_api", kwargs={"username": teacher.username}))
+        response = self.client.get(reverse("api:accounts_api:detail", kwargs={"username": teacher.username}))
 
         self.assertEqual(response.status_code, 200)
         payload = response.json()
@@ -353,7 +351,7 @@ class AccountsApiTests(AccountsBaseTestCase):
         Enrollment.objects.create(student=student, course=course)
         self.client.force_login(requester)
 
-        response = self.client.get(reverse("accounts:user_profile_api", kwargs={"username": student.username}))
+        response = self.client.get(reverse("api:accounts_api:detail", kwargs={"username": student.username}))
 
         self.assertEqual(response.status_code, 200)
         payload = response.json()
