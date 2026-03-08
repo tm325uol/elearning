@@ -7,15 +7,15 @@ from django.conf.urls.static import static
 urlpatterns = [
     path("admin/", admin.site.urls),
 
-    # API landing page and documentation routes
-    path("api/", include("apps.api.urls")),
-
+    # Web pages
     path("", include("apps.core.urls")),
     path("", include("apps.accounts.urls")),
     path("courses/", include("apps.courses.urls")),
     path("status/", include("apps.status.urls")),
     path("chat/", include("apps.chat.urls")),
-    path("api/notifications/", include("apps.notifications.api_urls"))
+
+    # Central API gateway
+    path("api/", include("apps.api.urls")),
 ]
 
 # Serve uploaded media files such as profile images and course materials in development only
