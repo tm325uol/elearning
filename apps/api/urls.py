@@ -1,4 +1,5 @@
 from django.urls import include, path
+from django.contrib.admin.views.decorators import staff_member_required
 from drf_spectacular.views import (
     SpectacularJSONAPIView,
     SpectacularRedocView,
@@ -10,19 +11,16 @@ from .views import api_home
 app_name = "api"
 
 urlpatterns = [
-    # API landing page
-    path("", api_home, name="home"),
-
-    # API documentation
-    path("schema/", SpectacularJSONAPIView.as_view(), name="schema"),
+    path("", staff_member_required(api_home), name="home"),
+    path("schema/", staff_member_required(SpectacularJSONAPIView.as_view()), name="schema"),
     path(
         "docs/swagger/",
-        SpectacularSwaggerView.as_view(url_name="api:schema"),
+        staff_member_required(SpectacularSwaggerView.as_view(url_name="api:schema")),
         name="swagger",
     ),
     path(
         "docs/redoc/",
-        SpectacularRedocView.as_view(url_name="api:schema"),
+        staff_member_required(SpectacularRedocView.as_view(url_name="api:schema")),
         name="redoc",
     ),
 

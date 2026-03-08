@@ -1,7 +1,7 @@
 from django.urls import path
 from . import api
 
-app_name = "notifications"
+app_name = "notifications_api"
 
 urlpatterns = [
     path("", api.GetNotificationsAPI.as_view(), name="list"),
