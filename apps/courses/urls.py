@@ -4,38 +4,46 @@ from . import views
 
 app_name = "courses"
 
-urlpatterns = [    
-    # Create a new Course
-    path("create/", views.course_create, name="course_create"),
+urlpatterns = [
+    # Course management
+    path("create/",
+          views.course_create, name="course_create"),
 
-    # Edit basic Course info
-    path("<int:course_id>/edit/", views.course_edit, name="course_edit"),
+    path("<int:course_id>/edit/",
+          views.course_edit, name="course_edit"),
 
-    # Enrollments (remove)
+    # Enrollment management
     path("<int:course_id>/enrollments/<int:enrollment_id>/remove/",
-         views.enrollment_remove, name="enrollment_remove"),
+          views.enrollment_remove, name="enrollment_remove"),
 
-    # Materials
+    # Material management
     path("<int:course_id>/materials/upload/",
-         views.material_upload, name="material_upload"),
+          views.material_upload, name="material_upload"),
+
     path("<int:course_id>/materials/<int:material_id>/delete/",
-         views.material_delete, name="material_delete"),
+          views.material_delete, name="material_delete"),
 
-    # Deadlines
+    # Deadline management
     path("<int:course_id>/deadlines/add/",
-         views.deadline_add, name="deadline_add"),
+          views.deadline_add, name="deadline_add"),
+
     path("<int:course_id>/deadlines/<int:deadline_id>/edit/",
-         views.deadline_edit, name="deadline_edit"),
+          views.deadline_edit, name="deadline_edit"),
+
     path("<int:course_id>/deadlines/<int:deadline_id>/delete/",
-         views.deadline_delete, name="deadline_delete"),
+          views.deadline_delete, name="deadline_delete"),
 
-    # Student Actions
-    path("<int:course_id>/", views.course_detail, name="course_detail"),
-    path("<int:course_id>/enroll/", views.course_enroll, name="course_enroll"),
+    # Student actions
+    path("<int:course_id>/",
+          views.course_detail, name="course_detail"),
 
-    # Feedback for a Course: GET to retrieve, POST to create
-    path("<int:course_id>/feedback/", views.course_feedback, name="course_feedback"),
+    path("<int:course_id>/enroll/",
+          views.course_enroll, name="course_enroll"),
 
-    # Course Search
-    path("search/", views.course_search, name="course_search"),
+    path("<int:course_id>/feedback/",
+          views.course_feedback, name="course_feedback"),
+
+    # Course search
+    path("search/",
+          views.course_search, name="course_search"),
 ]

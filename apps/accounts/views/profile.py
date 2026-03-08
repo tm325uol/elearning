@@ -31,7 +31,7 @@ def user_profile(request, username):
     # Fetch the user whose profile is being visited
     profile_user = get_object_or_404(User, username=username)
 
-    # PRIVACY CHECK: If it's a student profile and visitor is a guest
+    # Privacy check: If it's a student profile and visitor is a guest
     if profile_user.role == 'STUDENT' and not request.user.is_authenticated:
         # Redirect to login and bring them back here after they sign in
         login_url = reverse('accounts:login')
