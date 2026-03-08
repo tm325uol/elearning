@@ -1,22 +1,12 @@
+from django.shortcuts import get_object_or_404
+
 from rest_framework import serializers, views, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from django.shortcuts import get_object_or_404
+
 from .models import Notification
+from .serializers import NotificationSerializer
 
-# --- Serializer ---
-class NotificationSerializer(serializers.ModelSerializer):
-    # Format the time nicely for the frontend (e.g., "Oct 24, 2:30 PM")
-    time_ago = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Notification
-        fields = ['id', 'notification_type', 'message', 'link', 'is_read', 'time_ago']
-
-    def get_time_ago(self, obj):
-        return obj.created_at.strftime("%b %d, %I:%M %p")
-
-# --- Views ---
 class GetNotificationsAPI(views.APIView):
     permission_classes = [IsAuthenticated]
 
@@ -64,5 +54,12 @@ class MarkNotificationUnreadAPI(views.APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, pk):
-        Notification.objects.filter(id=pk, recipient=request.user).update(is_read=False)
+        notification = get_object_or_404(
+            Notification,
+            id=pk,
+            recipient=request.user,
+        )
+        notification.is_read = False
+        notification.save()
+
         return Response({"success": True})

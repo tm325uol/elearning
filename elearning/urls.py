@@ -8,13 +8,13 @@ urlpatterns = [
     path("admin/", admin.site.urls),
 
     path("api/", include("apps.api.urls")),
-    
+
     path("", include("apps.core.urls")),
     path("", include("apps.accounts.urls")),
     path("courses/", include("apps.courses.urls")),
     path("status/", include("apps.status.urls")),
     path("chat/", include("apps.chat.urls")),
-    path("", include("apps.notifications.urls")),
+    path("api/notifications/", include("apps.notifications.urls"))
 ]
 
 # Serve uploaded media files such as profile images and course materials in development only

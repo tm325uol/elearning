@@ -1,14 +1,12 @@
-# notifications/urls.py
 from django.urls import path
-from . import views
+from . import api
 
 app_name = "notifications"
 
 urlpatterns = [
-    path('api/notifications/', views.GetNotificationsAPI.as_view(), name='api_notifications'),
-    path('api/notifications/<int:pk>/read/', views.MarkNotificationReadAPI.as_view(), name='api_mark_notification_read'),
-    path('api/notifications/read-all/', views.MarkAllNotificationsReadAPI.as_view(), name='api_mark_all_read'),
-    path('api/notifications/<int:pk>/unread/', views.MarkNotificationUnreadAPI.as_view(), name='api_unread_notification'),
-    path('api/notifications/<int:pk>/delete/', views.DeleteNotificationAPI.as_view(), name='api_delete_notification'),
-    
+    path("", api.GetNotificationsAPI.as_view(), name="list"),
+    path("<int:pk>/read/", api.MarkNotificationReadAPI.as_view(), name="mark_read"),
+    path("read-all/", api.MarkAllNotificationsReadAPI.as_view(), name="mark_all_read"),
+    path("<int:pk>/unread/", api.MarkNotificationUnreadAPI.as_view(), name="mark_unread"),
+    path("<int:pk>/delete/", api.DeleteNotificationAPI.as_view(), name="delete"),
 ]
