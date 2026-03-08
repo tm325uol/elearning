@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
-
+    
+    'drf_spectacular',
     'rest_framework',
 
     "apps.core.apps.CoreConfig",
@@ -56,6 +57,16 @@ INSTALLED_APPS = [
     "apps.notifications.apps.NotificationsConfig",
     "apps.api.apps.ApiConfig",
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "CM3035 E-Learning REST API",
+    "DESCRIPTION": "OpenAPI schema for the E-Learning REST API (CM3035 Final Project)",
+    "VERSION": "1.0.0",
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
