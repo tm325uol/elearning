@@ -69,18 +69,18 @@ function fetchUnreadNotifications() {
     fetch('/api/notifications/')
         .then(response => response.json())
         .then(data => {
-            updateNotificationUI(data.count, data.notifications);
+            updateNotificationUI(data.unread_count, data.notifications);
         })
         .catch(error => console.error('Error fetching notifications:', error));
 }
 
-function updateNotificationUI(count, notifications) {
+function updateNotificationUI(unread_count, notifications) {
     const badge = document.getElementById("notificationBadge");
     const list = document.getElementById("notificationList");
 
     // 1. Update Badge
-    if (count > 0) {
-        badge.textContent = count > 9 ? '9+' : count;
+    if (unread_count > 0) {
+        badge.textContent = unread_count > 9 ? '9+' : unread_count;
         badge.classList.remove("hidden");
     } else {
         badge.classList.add("hidden");
