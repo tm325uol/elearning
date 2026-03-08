@@ -1,15 +1,19 @@
 from django.contrib.auth import get_user_model
-from django.contrib.auth.decorators import login_required
 from django.db.models import Q
-from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
-from django.utils.formats import date_format
+
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+
+from drf_spectacular.utils import OpenApiParameter, extend_schema
+
+from .serializers import UserProfileSerializer, UserSearchResponseSerializer
 
 User = get_user_model()
 
 
 def get_user_data_payload(user):
-    """Unified data structure for search results and profile view."""
     data = {
         "id": user.id,
         "username": user.username,
@@ -23,55 +27,60 @@ def get_user_data_payload(user):
     }
 
     if user.is_teacher:
-        # Access through the 'teachings' related_name on the Teaching model
         data["teaching_courses"] = [
-            {"id": t.course.id, "title": t.course.title} 
-            for t in user.teachings.all().select_related('course')
+            {
+                "id": teaching.course.id,
+                "title": teaching.course.title,
+            }
+            for teaching in user.teachings.select_related("course").all()
         ]
         data["enrolled_courses"] = None
     else:
-        # For students, count via 'enrollments' related_name
-        data["enrolled_courses"] = user.enrollments.count()
         data["teaching_courses"] = None
-        
+        data["enrolled_courses"] = user.enrollments.count()
+
     return data
 
 
-# ================
-# User Profile API
-# ================
-@login_required
-def user_profile_api(request, username):
-    profile_user = get_object_or_404(User, username=username)
-    return JsonResponse(get_user_data_payload(profile_user))
-
-
-# ============
-# User Search
-# ============
-@login_required
+@extend_schema(
+    summary="Search users",
+    description="Search active users by name, username, or email, with optional role filtering.",
+    parameters=[
+        OpenApiParameter(name="q", type=str, required=False),
+        OpenApiParameter(name="role", type=str, required=False),
+    ],
+    responses=UserSearchResponseSerializer,
+)
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
 def user_search_api(request):
     query = request.GET.get("q", "").strip()
-    
-    # Default to an empty string instead of "STUDENT"
     role = request.GET.get("role", "").upper()
 
-    # Start with all active users
     users = User.objects.filter(is_active=True)
 
-    # Only filter by role if the frontend specifically asked for one
     if role and role != "ALL":
         users = users.filter(role=role)
 
-    # Apply the text search
     if query:
         users = users.filter(
-            Q(full_name__icontains=query) | 
-            Q(username__icontains=query) | 
-            Q(email__icontains=query)
+            Q(full_name__icontains=query)
+            | Q(username__icontains=query)
+            | Q(email__icontains=query)
         )
 
-    # Limit results to 15 to keep the chat search UI snappy
-    results = [get_user_data_payload(u) for u in users[:15]]
-    
-    return JsonResponse({"results": results})
+    payload = [get_user_data_payload(user) for user in users[:15]]
+    return Response({"results": payload})
+
+
+@extend_schema(
+    summary="Get user profile",
+    description="Return the public profile payload for a user by username.",
+    responses=UserProfileSerializer,
+)
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def user_profile_api(request, username):
+    profile_user = get_object_or_404(User, username=username)
+    payload = get_user_data_payload(profile_user)
+    return Response(payload)
