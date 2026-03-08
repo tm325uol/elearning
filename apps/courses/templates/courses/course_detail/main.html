@@ -224,8 +224,8 @@
 </div>
 
 {% if request.user.is_authenticated %}
-  {% include "courses/shared/course_edit_modal.html" %}
-  {% include "courses/shared/feedback_modal.html" %}
+  {% include "courses/components/course_edit_modal.html" %}
+  {% include "courses/components/feedback_modal.html" %}
 {% endif %}
 
 {% endblock %}
