@@ -372,17 +372,17 @@ def course_feedback(request, course_id):
 # Course Search
 # =========================
 def course_search(request):
-    # 1. Get query parameters
+    # Get query parameters
     search_query = request.GET.get('q', '')
     role_filter = request.GET.get('role', None) # Optional: filter by role
     
-    # 2. Fetch the data using our centralized helper
+    # Fetch the data using our centralized helper
     queryset = _get_annotated_courses_queryset(
         user=request.user, 
         search_query=search_query
     )
     
-    # 3. Detect if it's an API request
+    # Detect if it's an API request
     # Checks for 'application/json' in headers or a '?format=json' param
     is_api = (
         request.headers.get('Accept') == 'application/json' or 

@@ -140,11 +140,11 @@
     .then(response => response.json())
     .then(data => {
       if (data.success) {
-        // 1. Remove the comment from the screen instantly
+        // Remove the comment from the screen instantly
         const commentEl = document.getElementById(`comment-${commentId}`);
         if (commentEl) commentEl.remove();
 
-        // 2. Decrement the comment counter
+        // Decrement the comment counter
         const countSpan = document.getElementById(`comment-count-${statusId}`);
         if (countSpan) {
           // Math.max prevents it from ever going below 0

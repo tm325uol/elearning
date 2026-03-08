@@ -9,7 +9,7 @@ let reconnectTimer = null;
 const unreadCounts = new Map();
 const seenMessageIds = new Set();
 
-// Dynamic getter to ensure we always have the latest ID from the template
+// Get the current user ID from the template
 function getCurrentUserId() {
   const id = window.CURRENT_USER_ID || null;
   if (!id) {
@@ -113,7 +113,6 @@ function createConversationItem(conv) {
   const avatarSrc = conv.avatar_url;
 
   // Generate the badge HTML if the user is blocked
-  // Change `conv.is_blocked` to `conv.i_blocked_them`
   const blockedBadgeHtml = conv.i_blocked_them 
     ? `<span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-red-100 text-red-600 uppercase tracking-wider shrink-0">Blocked</span>` 
     : "";
@@ -243,7 +242,6 @@ function loadChatHistory(conversationId) {
 
 function buildMessageDOM(message, isMine, timeStr = "") {
   const wrapper = document.createElement("div");
-  // CRITICAL FIX: Added 'w-full' to ensure justify-end actually pushes the bubble to the right
   wrapper.className = `flex mb-3 w-full ${isMine ? "justify-end" : "justify-start"}`;
 
   const bubbleClass = isMine
@@ -290,13 +288,13 @@ function connectInboxSocket() {
     let data;
     try { data = JSON.parse(event.data); } catch { return; }
 
-    // 1. Check for standard errors
+    // Check for standard errors
     if (data.error) {
       alert(data.error);
       return;
     }
 
-    // 2. NEW: Handle live notifications!
+    // Handle live notifications!
     if (data.type === "notification") {
         handleRealtimeNotification(data.payload);
         return; 
@@ -331,7 +329,7 @@ function connectInboxSocket() {
 
 // --- Helper function to update the UI live ---
 window.handleRealtimeNotification = function(notif) {
-    // A. Increment the Red Badge
+    // Increment the Red Badge
     const badge = document.getElementById("notificationBadge");
     if (badge) {
         let currentCount = parseInt(badge.textContent) || 0;
@@ -340,7 +338,7 @@ window.handleRealtimeNotification = function(notif) {
         badge.classList.remove("hidden");
     }
 
-    // B. Inject the new notification at the top of the dropdown list
+    // Inject the new notification at the top of the dropdown list
     const list = document.getElementById("notificationList");
     if (!list) return;
 
@@ -396,17 +394,17 @@ window.sendMessage = function (event) {
     return;
   }
 
-  // 1. Send to server
+  // Send to server
   inboxSocket.send(JSON.stringify({
     type: "send",
     conversation_id: activeConversationId,
     message: message
   }));
 
-  // 2. Clear input
+  // Clear input
   input.value = "";
 
-  // 3. Update the sidebar preview instantly (this is fine because it just overwrites text)
+  // Update the sidebar preview instantly
   const localTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   updateConversationPreview(String(activeConversationId), message, getCurrentUserId(), localTime);
   moveConversationToTop(String(activeConversationId));
@@ -629,7 +627,7 @@ window.handleNewChatSearch = function(query) {
 }
 
 window.initiateChatWithUser = function(userId) {
-  // Hit the start_conversation Django view you already created
+  // Hit the start_conversation Django view already created
   fetch(`/chat/start/${userId}/`)
     .then(res => res.json())
     .then(data => {
@@ -709,7 +707,7 @@ window.clearChatHistory = function() {
         return; 
     }
 
-    // Call your Django backend to delete the messages
+    // Call Django backend to delete the messages
     fetch(`/chat/clear/${activeConversationId}/`, {
         method: "POST",
         headers: {
@@ -746,23 +744,23 @@ window.blockChatUser = function() {
     .then(res => res.json())
     .then(data => {
         if (data.success) {
-            // 1. Update the cache
+            // Update the cache
             const conv = conversationsCache.find(c => String(c.id) === String(activeConversationId));
             if (conv) {
                 // Change this from is_blocked to i_blocked_them
                 conv.i_blocked_them = true; 
             }
             
-            // 2. Disable Composer
+            // Disable Composer
             setComposerEnabled(false);
             const input = document.getElementById("chatInput");
             if (input) input.placeholder = "You have blocked this user.";
 
-            // 3. Show Header Badge
+            // Show Header Badge
             const badgeEl = document.getElementById("chatBlockedBadge");
             if (badgeEl) badgeEl.classList.remove("hidden");
 
-            // 4. Force the sidebar to re-render so the badge appears there too
+            // Force the sidebar to re-render so the badge appears there too
             const list = document.getElementById("conversationList");
             if (list) {
                 list.innerHTML = "";
