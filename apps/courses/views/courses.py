@@ -1,20 +1,23 @@
-import re
 from datetime import datetime
+import re
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.db import transaction, IntegrityError
-from django.db.models import Count, Sum, Avg, Q, F
+from django.db import IntegrityError, transaction
+from django.db.models import Avg, Count, F, Q, Sum
 from django.http import HttpResponseForbidden
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
 
-from ..models import *
 from ..forms import *
-from ..utils import _get_course_feedback_data, _get_annotated_courses_queryset
+from ..models import *
+from ..utils import (
+    _get_annotated_courses_queryset,
+    _get_course_feedback_data,
+)
 
 
 # =========================
@@ -22,7 +25,7 @@ from ..utils import _get_course_feedback_data, _get_annotated_courses_queryset
 # =========================
 @login_required
 def course_create(request):
-    # SAFELY check the role without triggering an attribute error on custom User models
+    # Safely check the role without triggering an attribute error on custom User models
     if getattr(request.user, 'role', '') != 'TEACHER':
         return HttpResponseForbidden("Teachers only")
 
@@ -60,7 +63,7 @@ def course_create(request):
         # Validate category strictly
         valid_categories = {c[0] for c in Course.CATEGORY_CHOICES}
         if not category:
-            category = Course.CATEGORY_GENERAL # Make sure CATEGORY_GENERAL exists on your model
+            category = Course.CATEGORY_GENERAL
         elif category not in valid_categories:
             messages.error(request, "Invalid category selected.")
             return redirect(next_url)
