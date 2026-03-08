@@ -50,7 +50,7 @@ function setSearchRole(role) {
 }
 
 /* =========================
-   SEARCH USERS (Debounced)
+   SEARCH USERS
 ========================= */
 
 function searchUsers() {
@@ -87,8 +87,7 @@ function searchUsers() {
         const card = document.createElement("div");
         card.className = "border border-gray-100 rounded-xl p-4 flex gap-4 hover:bg-gray-50 cursor-pointer transition shadow-sm bg-white";
         
-        // Provide a fallback for the avatar using your model's logic
-        const avatar = u.avatar_url || "/media/profile_photos/default-avatar.png";
+        const avatar = u.avatar_url
 
         card.innerHTML = `
           <img src="${avatar}" class="w-12 h-12 rounded-full object-cover bg-gray-100 shadow-sm" alt="Avatar" />
@@ -140,13 +139,13 @@ function searchUsers() {
    PROFILE VIEW
 ========================= */
 function openUserProfile(userName, cachedData = null) {
-  // 1. If we have cachedData from the search result, populate the UI immediately
+  // If have cachedData from the search result, populate the UI immediately
   if (cachedData) {
     populateProfileUI(cachedData);
     showProfileView(); //
   }
 
-  // 2. Fetch fresh data from the API anyway to ensure bio/joined date are current
+  // Fetch fresh data from the API anyway to ensure bio/joined date are current
   fetch(`/api/users/${encodeURIComponent(userName)}/?format=json`, {
     headers: { 'X-Requested-With': 'XMLHttpRequest' }
   })
@@ -183,7 +182,7 @@ function populateProfileUI(data) {
     fullProfileLink.href = `/@${encodeURIComponent(data.username)}/`;
   }
 
-  // 1. Handle Student Stats (Count only)
+  // Handle Student Stats (Count only)
   const studentStats = document.getElementById("profileStats");
   if (studentStats) {
     if (typeof data.enrolled_courses === "number") {
@@ -194,7 +193,7 @@ function populateProfileUI(data) {
     }
   }
 
-  // 2. Handle Teacher Stats (List of courses)
+  // Handle Teacher Stats (List of courses)
   const teacherStats = document.getElementById("teacherStats");
   const courseListContainer = document.getElementById("teachingCourseList");
   
@@ -217,7 +216,7 @@ function populateProfileUI(data) {
   // Avatar
   const avatarImg = document.getElementById("profileAvatar");
   if (avatarImg) {
-    avatarImg.src = data.avatar_url || "/media/profile_photos/default-avatar.png";
+    avatarImg.src = data.avatar_url;
   }
 }
 
@@ -240,7 +239,7 @@ function openMessengerWithUser() {
 }
 
 /* =========================
-   VIEW SWITCHING (Tailwind Safe)
+   VIEW SWITCHING
 ========================= */
 
 function showSearchView() {

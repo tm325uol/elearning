@@ -110,7 +110,7 @@ function createConversationItem(conv) {
     : "Started a new conversation";
 
   div.className = buildConversationItemClass(conv.id);
-  const avatarSrc = conv.avatar_url || "/media/profile_photos/default-avatar.png";
+  const avatarSrc = conv.avatar_url;
 
   // Generate the badge HTML if the user is blocked
   // Change `conv.is_blocked` to `conv.i_blocked_them`
@@ -194,7 +194,7 @@ function updateHeader(user) {
 
   if (nameEl) nameEl.textContent = user.name || "Unknown";
   if (roleEl) roleEl.textContent = user.role || "";
-  if (avatarEl) avatarEl.src = user.avatar_url || "/media/profile_photos/default-avatar.png";
+  if (avatarEl) avatarEl.src = user.avatar_url;
   
   if (badgeEl) {
       // Only show the badge if I blocked them
@@ -604,8 +604,7 @@ window.handleNewChatSearch = function(query) {
           const div = document.createElement("div");
           div.className = "px-4 py-3 flex items-center gap-3 hover:bg-gray-50 cursor-pointer transition";
           
-          // Use avatar_url falling back to default
-          const avatar = user.avatar_url || "/media/profile_photos/default-avatar.png";
+          const avatar = user.avatar_url;
           
           div.innerHTML = `
             <img src="${avatar}" class="w-10 h-10 rounded-full object-cover bg-gray-100" />
