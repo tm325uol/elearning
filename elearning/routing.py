@@ -1,9 +1,7 @@
-# elearning/routing.py
-
 from channels.routing import URLRouter
 from django.urls import path
 from apps.chat import routing as chat_routing
-from apps.notifications import routing as notification_routing # If you created this
+from apps.notifications import routing as notification_routing
 
 websocket_urlpatterns = [
     # Include all paths from the chat app

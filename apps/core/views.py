@@ -1,7 +1,7 @@
 from django.shortcuts import redirect
 
 def home_redirect(request):
-    # Not logged in? Go to login or a public landing page.
+    # Not logged in? Go to login page.
     if not request.user.is_authenticated:
         return redirect("accounts:login")
 

@@ -20,7 +20,6 @@ urlpatterns = [
     # The unified Dashboard / Public Profile View
     path("@<str:username>/", views.user_profile, name="user_profile"),
 
-
     # The unified Dashboard / Public Profile View
     # (Keep this at the very bottom so it catches @usernames)
     path("@<str:username>/", views.user_profile, name="user_profile"),

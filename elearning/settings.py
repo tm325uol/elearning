@@ -34,9 +34,6 @@ AUTH_USER_MODEL = "accounts.User"
 # instead of the default /accounts/login/
 LOGIN_URL = 'accounts:login'
 
-# This is where users go if they log in without a ?next= parameter
-LOGIN_REDIRECT_URL = 'core:home'
-
 INSTALLED_APPS = [
     "daphne",
     "channels",
@@ -87,10 +84,6 @@ TEMPLATES = [
         },
     },
 ]
-
-# TEMPLATES[0]["OPTIONS"]["context_processors"] += [
-#     "notifications.context_processors.notifications_unread_count",
-# ]
 
 WSGI_APPLICATION = 'elearning.wsgi.application'
 ASGI_APPLICATION = "elearning.asgi.application"

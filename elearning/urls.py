@@ -15,6 +15,7 @@ urlpatterns = [
     path("", include("apps.notifications.urls")),
 ]
 
+# Serve uploaded media files such as profile images and course materials in development only
 if settings.DEBUG:
     urlpatterns += static(
         settings.MEDIA_URL,
