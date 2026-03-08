@@ -20,11 +20,7 @@ urlpatterns = [
     # The unified Dashboard / Public Profile View
     path("@<str:username>/", views.user_profile, name="user_profile"),
 
-    # The unified Dashboard / Public Profile View
-    # (Keep this at the very bottom so it catches @usernames)
-    path("@<str:username>/", views.user_profile, name="user_profile"),
-
-    # API for User's data
-    path("users/search/", api.user_search, name="user_search"),
+    # --- API for User Data ---
+    path("api/users/search/", api.user_search_api, name="user_search_api"),
     path("api/users/<str:username>/", api.user_profile_api, name="user_profile_api")
 ]

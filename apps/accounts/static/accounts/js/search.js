@@ -68,7 +68,7 @@ function searchUsers() {
   container.innerHTML = `<p class="text-sm text-gray-400 text-center py-4">Searching...</p>`;
 
   searchTimeout = setTimeout(() => {
-    fetch(`/users/search/?q=${encodeURIComponent(q)}&role=${currentRole}`, {
+    fetch(`/api/users/search/?q=${encodeURIComponent(q)}&role=${currentRole}`, {
       headers: { 'X-Requested-With': 'XMLHttpRequest' }
     })
     .then(res => {

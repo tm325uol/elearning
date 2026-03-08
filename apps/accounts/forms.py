@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth import get_user_model
 
-# Get your active User model (which contains the Role choices and full_name)
+# Get active User model
 User = get_user_model()
 
 class SignupForm(forms.ModelForm):

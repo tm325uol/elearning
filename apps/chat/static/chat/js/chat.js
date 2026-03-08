@@ -583,7 +583,7 @@ window.handleNewChatSearch = function(query) {
   // Debounce the API call by 400ms so we don't spam the server
   userSearchTimeout = setTimeout(() => {
     // Re-using your existing generic user search endpoint
-    fetch(`/users/search/?q=${encodeURIComponent(cleanQuery)}`)
+    fetch(`/api/users/search/?q=${encodeURIComponent(cleanQuery)}`)
       .then(res => res.json())
       .then(data => {
         container.innerHTML = "";

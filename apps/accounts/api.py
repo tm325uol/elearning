@@ -1,11 +1,12 @@
-from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from django.utils.formats import date_format
 from django.db.models import Q
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from django.utils.formats import date_format
 
 User = get_user_model()
+
 
 def get_user_data_payload(user):
     """Unified data structure for search results and profile view."""
@@ -36,20 +37,20 @@ def get_user_data_payload(user):
     return data
 
 
-# =========================
+# ================
 # User Profile API
-# =========================
+# ================
 @login_required
 def user_profile_api(request, username):
     profile_user = get_object_or_404(User, username=username)
     return JsonResponse(get_user_data_payload(profile_user))
 
 
-# =========================
+# ============
 # User Search
-# =========================
+# ============
 @login_required
-def user_search(request):
+def user_search_api(request):
     query = request.GET.get("q", "").strip()
     
     # Default to an empty string instead of "STUDENT"

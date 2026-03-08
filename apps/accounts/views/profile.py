@@ -17,15 +17,16 @@ from ..utils import _get_teacher_profile_data
 
 User = get_user_model()
 
+
 @login_required
 def dashboard_redirect(request):
     """Simply redirects /home/ to the user's personal @username URL."""
     return redirect("accounts:user_profile", username=request.user.username)
 
 
-# =========================
+# ==============================
 # Get User Profile for Dashboard
-# =========================
+# ==============================
 def user_profile(request, username):
     # Fetch the user whose profile is being visited
     profile_user = get_object_or_404(User, username=username)
@@ -126,9 +127,9 @@ def user_profile(request, username):
     return render(request, "accounts/profile.html", context)
 
 
-# =========================
+# =================
 # Edit User Profile
-# =========================
+# =================
 @login_required
 @require_POST
 def edit_profile(request):
