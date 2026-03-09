@@ -57,9 +57,13 @@
           </div>
 
           {% if is_own_profile %}
-            <div class="mt-4 pt-4 border-t border-gray-100 flex gap-3">
+            <div class="mt-4 pt-4 border-t border-gray-100 flex flex-wrap gap-3 gap-y-2">
               <a href="{% url 'courses:course_detail' c.id %}" class="text-sm font-semibold text-blue-600 hover:text-blue-800 transition">View Course</a>
+              
+              <a href="{% url 'courses:course_detail' c.id %}?tab=materials" class="text-sm font-medium text-gray-600 hover:text-gray-900 transition">Manage Materials</a>
+              
               <a href="{% url 'courses:course_detail' c.id %}?tab=students" class="text-sm font-medium text-gray-600 hover:text-gray-900 transition">Manage Students</a>
+              
               <button type="button"
                       onclick="openEditCourseModal(this)"
                       data-edit-url="{% url 'courses:course_edit' c.id %}"
