@@ -29,12 +29,17 @@
                 <span class="text-[10px] uppercase font-bold text-gray-400 tracking-widest mb-1">Instructor</span>
                 <div class="flex items-center gap-2">
                 {% if instructor_user %}
-                  <div class="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-[10px] font-bold text-blue-600">
-                    {{ instructor_user.username|slice:":1"|upper }}
-                  </div>
-                  <span class="text-sm font-bold text-gray-900">
-                    {{ instructor_user.full_name|default:instructor_user.username }}
-                  </span>
+                  
+                  <a href="{% url 'accounts:user_profile' instructor_user.username %}" 
+                     class="group flex items-center gap-2 hover:opacity-80 transition-opacity">
+                    <div class="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-[10px] font-bold text-blue-600 ring-2 ring-transparent group-hover:ring-blue-200 transition-all">
+                      {{ instructor_user.username|slice:":1"|upper }}
+                    </div>
+                    <span class="text-sm font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                      {{ instructor_user.full_name|default:instructor_user.username }}
+                    </span>
+                  </a>
+
                 {% else %}
                   <div class="w-6 h-6 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-400">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
