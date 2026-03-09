@@ -61,7 +61,15 @@ def _get_enrolled_courses_data(user):
     )
 
     # Fetch only the courses this user is enrolled in
-    courses_qs = Course.objects.filter(id__in=enrolled_course_ids).prefetch_related(
+    # Added .annotate() to calculate deadline and material counts in one query
+    courses_qs = Course.objects.filter(id__in=enrolled_course_ids).annotate(
+        materials_count=Count('materials', distinct=True),
+        upcoming_deadlines_count=Count(
+            'deadlines',
+            filter=Q(deadlines__due_at__gte=timezone.now()), # Only count future deadlines
+            distinct=True
+        )
+    ).prefetch_related(
         teachers_prefetch, user_feedback_prefetch
     )
 
