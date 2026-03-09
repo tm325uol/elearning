@@ -33,7 +33,7 @@ def notify_teacher_on_enrollment(sender, instance, created, **kwargs):
             msg = f"<b>{student.full_name}</b> enrolled in <b>{course.title}</b>."
             link = f"/courses/{course.id or course.course_id}/?tab=students"
             
-            # 1. Save to Database FIRST to generate the ID
+            # Save to Database FIRST to generate the ID
             notif = Notification.objects.create(
                 recipient=teaching.teacher, 
                 notification_type='ENROLLMENT', 
@@ -41,7 +41,7 @@ def notify_teacher_on_enrollment(sender, instance, created, **kwargs):
                 link=link
             )
             
-            # 2. Broadcast with the exact ID and read status
+            # Broadcast with the exact ID and read status
             broadcast_notification(teaching.teacher.id, {
                 "id": notif.id,
                 "is_read": False,
@@ -65,7 +65,7 @@ def notify_students_new_material(sender, instance, created, **kwargs):
             msg = f"New material uploaded to <b>{course.title}</b>: <b>{instance.original_name}</b>"
             link = f"/courses/{course.id or course.course_id}/?tab=materials"
             
-            # 1. Save to Database FIRST
+            # Save to Database FIRST
             notif = Notification.objects.create(
                 recipient=enrollment.student, 
                 notification_type='MATERIAL', 
@@ -73,7 +73,7 @@ def notify_students_new_material(sender, instance, created, **kwargs):
                 link=link
             )
             
-            # 2. Broadcast
+            # Broadcast
             broadcast_notification(enrollment.student.id, {
                 "id": notif.id,
                 "is_read": False,

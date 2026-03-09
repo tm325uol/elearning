@@ -78,7 +78,7 @@ function updateNotificationUI(unread_count, notifications) {
     const badge = document.getElementById("notificationBadge");
     const list = document.getElementById("notificationList");
 
-    // 1. Update Badge
+    // Update Badge
     if (unread_count > 0) {
         badge.textContent = unread_count > 9 ? '9+' : unread_count;
         badge.classList.remove("hidden");
@@ -86,7 +86,7 @@ function updateNotificationUI(unread_count, notifications) {
         badge.classList.add("hidden");
     }
 
-    // 2. Render List
+    // Render List
     if (notifications.length === 0) {
         list.innerHTML = `<div class="p-4 text-center text-sm text-gray-500">No new notifications</div>`;
         return;
@@ -204,35 +204,35 @@ window.markAllNotificationsRead = function() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            // 1. Hide the red badge on the bell
+            // Hide the red badge on the bell
             const badge = document.getElementById("notificationBadge");
             if (badge) {
                 badge.classList.add("hidden");
                 badge.textContent = "0";
             }
 
-            // 2. Instantly update all unread items to the "read" state
+            // Instantly update all unread items to the "read" state
             const list = document.getElementById("notificationList");
             if (list) {
                 // Find all items using the new unread background class
                 const unreadItems = list.querySelectorAll(".bg-blue-50\\/40");
                 
                 unreadItems.forEach(item => {
-                    // A. Swap background from blue to white
+                    // Swap background from blue to white
                     item.classList.remove("bg-blue-50/40", "hover:bg-blue-50/60");
                     item.classList.add("bg-white", "hover:bg-gray-50");
                     
-                    // B. Remove the glowing blue dot
+                    // Remove the glowing blue dot
                     const dot = item.querySelector("span.bg-blue-600");
                     if (dot) dot.remove();
                     
-                    // C. Apply grayscale and opacity to the icon
+                    // Apply grayscale and opacity to the icon
                     const iconWrapper = item.querySelector(".flex.items-start > div:first-child");
                     if (iconWrapper) {
                         iconWrapper.classList.add("opacity-50", "grayscale");
                     }
                     
-                    // D. Dim the main message text
+                    // Dim the main message text
                     const messageText = item.querySelector("p.text-sm");
                     if (messageText) {
                         messageText.classList.remove("text-gray-600");
@@ -246,7 +246,7 @@ window.markAllNotificationsRead = function() {
                         });
                     }
                     
-                    // E. Dim the timestamp and clock icon
+                    // Dim the timestamp and clock icon
                     const timeContainer = item.querySelector(".mt-1\\.5");
                     if (timeContainer) {
                         const timeElements = timeContainer.querySelectorAll(".text-blue-500\\/80");
@@ -264,7 +264,7 @@ window.markAllNotificationsRead = function() {
 
 
 window.handleRealtimeNotification = function(notif) {
-    // 1. Un-hide and Increment the Red Badge
+    // Un-hide and Increment the Red Badge
     const badge = document.getElementById("notificationBadge");
     if (badge) {
         badge.classList.remove("hidden");
@@ -272,7 +272,7 @@ window.handleRealtimeNotification = function(notif) {
         badge.textContent = currentCount + 1;
     }
 
-    // 2. Locate the Dropdown List
+    // Locate the Dropdown List
     const list = document.getElementById("notificationList");
     if (!list) return;
 
@@ -280,7 +280,7 @@ window.handleRealtimeNotification = function(notif) {
     const loadingSpinner = list.querySelector(".animate-spin");
     if (loadingSpinner) list.innerHTML = "";
 
-    // 3. Build the new HTML Element
+    // Build the new HTML Element
     const item = document.createElement("a");
     item.href = "javascript:void(0)";
     item.onclick = () => handleNotificationClick(notif.id, notif.link);
@@ -326,7 +326,7 @@ window.handleRealtimeNotification = function(notif) {
         </div>
     `;
     
-    // 4. Prepend puts the newest notification at the TOP of the list
+    // Prepend puts the newest notification at the TOP of the list
     list.prepend(item);
 };
 
@@ -368,7 +368,7 @@ window.deleteSingleNotif = function(notifId, btnElement) {
     });
 };
 
-// UPDATE: Modify your existing 'markSingleNotifRead' to toggle the button instead of deleting it
+// Modify your existing 'markSingleNotifRead' to toggle the button instead of deleting it
 window.markSingleNotifRead = function(notifId, btnElement) {
     fetch(`/api/notifications/${notifId}/read/`, {
         method: 'POST',
@@ -431,7 +431,7 @@ document.addEventListener("click", function () {
     });
 });
 
-// NEW: Mark a notification as Unread
+// Mark a notification as Unread
 window.markSingleNotifUnread = function(notifId, btnElement) {
     fetch(`/api/notifications/${notifId}/unread/`, {
         method: 'POST',
@@ -444,21 +444,21 @@ window.markSingleNotifUnread = function(notifId, btnElement) {
         if (data.success) {
             const item = btnElement.closest('a');
             
-            // 1. Swap background back to unread blue
+            // Swap background back to unread blue
             item.classList.remove("bg-white", "hover:bg-gray-50");
             item.classList.add("bg-blue-50/40", "hover:bg-blue-50/60");
             
-            // 2. Add the glowing blue dot back
+            // Add the glowing blue dot back
             if (!item.querySelector("span.bg-blue-600")) {
                 const dotHtml = `<span class="absolute left-1.5 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-blue-600 shadow-[0_0_4px_rgba(37,99,235,0.6)]"></span>`;
                 item.insertAdjacentHTML('afterbegin', dotHtml);
             }
             
-            // 3. Remove grayscale from the icon
+            // Remove grayscale from the icon
             const iconWrapper = item.querySelector(".flex.items-start > div:first-child");
             if (iconWrapper) iconWrapper.classList.remove("opacity-50", "grayscale");
             
-            // 4. Restore the bold, dark text
+            // Restore the bold, dark text
             const messageText = item.querySelector("p.text-sm");
             if (messageText) {
                 messageText.classList.remove("text-gray-400");
@@ -470,17 +470,17 @@ window.markSingleNotifUnread = function(notifId, btnElement) {
                 });
             }
             
-            // 5. Morph the button back into "Mark as read"
+            // Morph the button back into "Mark as read"
             btnElement.textContent = "Mark as read";
             btnElement.setAttribute("onclick", `markSingleNotifRead(${notifId}, this)`);
             
-            // 6. Increase the red bell badge
+            // Increase the red bell badge
             incrementBadge();
         }
     });
 };
 
-// NEW: Helper to increase the red badge
+// Helper to increase the red badge
 function incrementBadge() {
     const badge = document.getElementById("notificationBadge");
     if (badge) {
