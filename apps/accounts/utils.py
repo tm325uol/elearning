@@ -12,8 +12,8 @@ def _get_teacher_profile_data(teacher, is_own_profile):
         .annotate(
             students_total=Count("enrollments", distinct=True),
             materials_total=Count("materials", distinct=True),
-            course_avg_rating=Avg("feedback__rating"),
-            course_rating_count=Count("feedback", distinct=True)
+            avg_rating=Avg('feedback__rating'),
+            rating_count=Count('feedback', distinct=True)
         )
         .order_by("-updated_at", "-created_at", "title")
         .distinct()
