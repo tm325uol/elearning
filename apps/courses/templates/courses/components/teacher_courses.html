@@ -23,15 +23,15 @@
 
   <div class="space-y-4" id="taughtCoursesList">
     {% for c in taught_courses %}
-      <div class="taught-course-card relative bg-white rounded-2xl border border-gray-200 shadow-sm hover:border-blue-300 transition flex overflow-hidden"
+      <div class="taught-course-card relative bg-white rounded-2xl border border-gray-200 shadow-sm hover:border-blue-300 transition flex"
            data-course-title="{{ c.title|lower }}">
         
-        <div class="w-48 shrink-0 bg-gray-100">
-          {% if c.thumbnail %}
-            <img src="{{ c.thumbnail.url }}" alt="{{ c.title }}" class="h-full w-full object-cover"/>
-          {% else %}
-            <div class="h-full w-full bg-slate-200"></div>
-          {% endif %}
+        <div class="w-48 shrink-0 bg-gray-100 rounded-l-2xl overflow-hidden">
+            {% if c.thumbnail %}
+              <img src="{{ c.thumbnail.url }}" alt="{{ c.title }}" class="h-full w-full object-cover"/>
+            {% else %}
+              <div class="h-full w-full bg-slate-200"></div>
+            {% endif %}
         </div>
 
         <div class="flex-1 p-5 flex flex-col justify-between">
@@ -73,25 +73,50 @@
           </div>
 
           {% if is_own_profile %}
-            <div class="mt-4 pt-4 border-t border-gray-100 flex flex-wrap gap-3 gap-y-2">
-              <a href="{% url 'courses:course_detail' c.id %}" class="text-sm font-semibold text-blue-600 hover:text-blue-800 transition">View Course</a>
+            <div class="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
+              <a href="{% url 'courses:course_detail' c.id %}" class="text-sm font-semibold text-blue-600 hover:text-blue-800 transition">
+                View Course &rarr;
+              </a>
               
-              <a href="{% url 'courses:course_detail' c.id %}?tab=materials" class="text-sm font-medium text-gray-600 hover:text-gray-900 transition">Manage Materials</a>
-              
-              <a href="{% url 'courses:course_detail' c.id %}?tab=students" class="text-sm font-medium text-gray-600 hover:text-gray-900 transition">Manage Students</a>
-              
-              <button type="button"
-                      onclick="openEditCourseModal(this)"
-                      data-edit-url="{% url 'courses:course_edit' c.id %}"
-                      data-course-code="{{ c.course_id }}"
-                      data-title="{{ c.title }}"
-                      data-description="{{ c.description }}"
-                      data-category="{{ c.category }}"
-                      data-duration="{{ c.duration|default:'' }}"
-                      data-max-students="{{ c.max_students|default:'' }}"
-                      class="text-sm font-medium text-gray-600 hover:text-gray-900 transition focus:outline-none">
-                Edit Details
-              </button>
+              <div class="relative">
+                <button type="button" 
+                        onclick="toggleCourseMenu('course-menu-{{ c.id }}')"
+                        class="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition focus:outline-none">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                  </svg>
+                </button>
+
+                <div id="course-menu-{{ c.id }}" 
+                     class="course-dropdown hidden absolute right-0 bottom-full mb-2 w-48 bg-white border border-gray-100 rounded-xl shadow-lg py-1.5 z-50">
+                  
+                  <a href="{% url 'courses:course_detail' c.id %}?tab=materials" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                    Manage Materials
+                  </a>
+                  
+                  <a href="{% url 'courses:course_detail' c.id %}?tab=students" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                    Manage Students
+                  </a>
+                  
+                  <div class="border-t border-gray-100 my-1"></div>
+                  
+                  <button type="button"
+                          onclick="openEditCourseModal(this); toggleCourseMenu('course-menu-{{ c.id }}');"
+                          data-edit-url="{% url 'courses:course_edit' c.id %}"
+                          data-course-code="{{ c.course_id }}"
+                          data-title="{{ c.title }}"
+                          data-description="{{ c.description }}"
+                          data-category="{{ c.category }}"
+                          data-duration="{{ c.duration|default:'' }}"
+                          data-max-students="{{ c.max_students|default:'' }}"
+                          class="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition text-left focus:outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                    Edit Details
+                  </button>
+                </div>
+              </div>
             </div>
           {% else %}
             <div class="mt-4 pt-4 border-t border-gray-100">
@@ -133,6 +158,31 @@
             card.style.display = "none";
           }
         });
+      });
+    }
+  });
+
+  // Toggle specific course menu
+  function toggleCourseMenu(menuId) {
+    // Close all other course menus first
+    document.querySelectorAll('.course-dropdown').forEach(menu => {
+      if (menu.id !== menuId) {
+        menu.classList.add('hidden');
+      }
+    });
+    
+    // Toggle the clicked one
+    const menu = document.getElementById(menuId);
+    if (menu) {
+      menu.classList.toggle('hidden');
+    }
+  }
+
+  // Close menus if clicking outside
+  document.addEventListener("click", function (e) {
+    if (!e.target.closest('.relative')) {
+      document.querySelectorAll('.course-dropdown').forEach(menu => {
+        menu.classList.add('hidden');
       });
     }
   });
